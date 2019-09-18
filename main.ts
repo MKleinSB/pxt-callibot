@@ -14,9 +14,9 @@ enum KMotor {
 }
 
 enum KnServo {
-    //% block="Servo 1"
+    //% block="Servo1"
     Servo1,
-    //% block="Servo 2"
+    //% block="Servo2"
     Servo2
 }
 
@@ -172,7 +172,7 @@ namespace callibot {
     }
 
     //% pos.min=0 pos.max=180
-    //% blockId=K_Servo block="Bewege |%nr| auf |%pos|°"
+    //% blockId=K_Servo block="Bewege Servo |%nr| auf |%pos|°"
     export function servo(nr: KnServo, pos: number) {
         let buffer = pins.createBuffer(2)
         if (pos < 0) {
