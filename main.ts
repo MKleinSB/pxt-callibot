@@ -172,8 +172,7 @@ namespace callibot {
     }
 
     //% pos.min=0 pos.max=180
-    //% blockId=K_Servo block="Bewege Servo |%nr| auf |%pos|°"
-    //% pos.shadow="protractorPicker"
+    //% blockId=K_Servo block="Bewege |%nr| auf |%pos|°"
     export function servo(nr: KnServo, pos: number) {
         let buffer = pins.createBuffer(2)
         if (pos < 0) {
