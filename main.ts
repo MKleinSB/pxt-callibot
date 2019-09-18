@@ -5,13 +5,18 @@ let KFunkAktiv = 0
 //let KFunkInitialized = 0
 
 enum KMotor {
+    //% block="links"
     links,
+    //% block="rechts"
     rechts,
+    //% block="beide"
     beide
 }
 
 enum KnServo {
+    //% block="Servo 1"
     Servo1,
+    //% block="Servo 2"
     Servo2
 }
 
@@ -23,22 +28,30 @@ enum KStop {
 }
 
 enum KSensor {
+    //% block="links"
     links,
+    //% block="rechts"
     rechts
 }
 
 enum KSensorStatus {
+    //% block="hell"
     hell,
+    //% block="dunkel"
     dunkel
 }
 
 enum KFunk {
+    //% block="an"
     an,
+    //% block="aus"
     aus
 }
 
 enum KEinheit {
+    //% block="cm"
     cm,
+    //% block="mm"
     mm
 }
 
@@ -160,6 +173,7 @@ namespace callibot {
 
     //% pos.min=0 pos.max=180
     //% blockId=K_Servo block="Bewege Servo |%nr| auf |%pos|°"
+    //% pos.shadow="protractorPicker"
     export function servo(nr: KnServo, pos: number) {
         let buffer = pins.createBuffer(2)
         if (pos < 0) {
