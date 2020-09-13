@@ -1,10 +1,9 @@
 {
     "name": "callibot",
     "version": "1.0.0",
-    "description": "",
+    "description": "MakeCode package for the Callibot car",
     "dependencies": {
-        "core": "*",
-        "radio": "*"
+        "core": "*"
     },
     "files": [
         "README.md",
