@@ -1,6 +1,6 @@
 # callibot
 
-Callibot Erweiterung zum testen.
+Erweiterung für den Callibot 1 von Knotech
 
 https://github.com/knotechgmbh/Callibot
 
