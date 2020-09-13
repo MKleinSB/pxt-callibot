@@ -8,11 +8,15 @@
     },
     "files": [
         "README.md",
-        "main.ts"
+        "main.ts",
+        "Knotech.ts"
     ],
     "testFiles": [
         "test.ts"
     ],
     "public": false,
+    "supportedTargets": [
+        "microbit"
+    ],
     "preferredEditor": "tsprj"
 }
