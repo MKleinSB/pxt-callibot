@@ -14,6 +14,10 @@
         "test.ts"
     ],
     "public": false,
+    "targetVersions": {
+        "target": "4.0.29",
+        "targetId": "calliopemini"
+    },
     "supportedTargets": [
         "calliopemini",
         "microbit"
