@@ -1,6 +1,6 @@
 # callibot
 
-Erweiterung für den Callibot 1 von Knotech
+Erweiterung für den Callibot 1 & 2 von Knotech
 
 https://github.com/knotechgmbh/Callibot
 
