@@ -1,5 +1,5 @@
-// V0.1.1
-// Calli:bot 2
+// Calli:bot 1 & 2 by Knotech
+// optimiert von M. Klein 5.2.23
 
 enum C2Motor {
     links,
@@ -50,18 +50,21 @@ enum C2RgbLed {
 }
 
 enum C2RgbColor {
-    rot,
-    grün,
-    blau,
-    gelb,
-    violett,
-    türkis,
-    weiß
+    red = 0xff0000,
+    green = 0x00ff00,
+    blue = 0x0000ff,
+    yellow = 0xffff00,
+    violett = 0xa300ff,
+    aqua = 0x00ffdc,
+    white = 0xffffff,
+    black = 0x000000
 }
 
 enum C2Dir {
-    vorwärts = 0,
-    rückwärts = 1
+    //% block="vorwärts"
+    vorwaerts = 0,
+    //% block="rückwärts"
+    rueckwaerts = 1
 }
 
 enum C2State {
@@ -96,6 +99,7 @@ enum C2Check {
 }
 
 
+
 //% weight=50 color="#FF0000" icon="\uf013" block="Calli:bot 2"
 namespace calliBot2 {
 
@@ -103,20 +107,34 @@ namespace calliBot2 {
     let c2LedState = 0;
     let c2FunkAktiv = 0;
     let c2IsBot2 = 0;
+
+    /**
+    * Custom color picker
+    */
+    //% blockId=CallibotNumberPicker block="%value"
+    //% blockHidden=true
+    //% shim=TD_ID
+    //% value.fieldEditor="colornumber" value.fieldOptions.decompileLiterals=true
+    //% weight=150
+    //% value.fieldOptions.colours='["#ff0000","#00ff00","#0000ff","#ffff00","#a300ff","#00ffdc","#ffffff","#000000"]'
+    //% value.fieldOptions.columns=4 value.fieldOptions.className='rgbColorPicker'  
+    export function CallibotNumberPicker(value: number) {
+        return value;
+    }
     //let KFunkInitialized = 0
 
     function init() {
         if (c2Initialized != 1) {
             c2Initialized = 1;
             let buffer = pins.i2cReadBuffer(0x21, 1);
-            if ((buffer[0] & 0x80) != 0){        // Check if it's a CalliBot2
+            if ((buffer[0] & 0x80) != 0) {        // Check if it's a CalliBot2
                 c2IsBot2 = 1;
             }
-            setLed(C2Motor.links, C2State.aus);
-            setLed(C2Motor.rechts, C2State.aus);
+            setLed(C2Motor.links, false);
+            setLed(C2Motor.rechts, false);
             motorStop(C2Motor.beide, C2Stop.Bremsen);
             setRgbLed(C2RgbLed.All, 0, 0, 0);
-    }
+        }
     }
 
     function writeMotor(nr: C2Motor, direction: C2Dir, speed: number) {
@@ -140,7 +158,7 @@ namespace calliBot2 {
     }
 
     //% speed.min=5 speed.max=100
-    //% blockId=C2_motor block="Schalte Motor |%KMotor| |%KDir| mit |%number| %"
+    //% blockId=C2_motor block="Schalte Motor |%KMotor| |%KDir| mit |%number|\\%"
     export function motor(nr: C2Motor, direction: C2Dir, speed: number) {
         if (speed > 100) {
             speed = 100
@@ -185,15 +203,16 @@ namespace calliBot2 {
         pins.i2cWriteBuffer(0x20, buffer)
     }
 
-    //% blockId=C2_SetLed block="Schalte LED |%KSensor| |%KState"
-    export function setLed(led: C2Motor, state: C2State) {
+    //% blockId=C2_SetLed block="Schalte LED |%KSensor| |$anaus"
+    //% anaus.shadow="toggleOnOff"
+    export function setLed(led: C2Motor, anaus: boolean) {
         let buffer = pins.createBuffer(2)
         init()
         buffer[0] = 0;      // SubAddress of LEDs
         //buffer[1]  Bit 0/1 = state of LEDs
         switch (led) {
             case C2Motor.links:
-                if (state == C2State.an) {
+                if (anaus) {
                     c2LedState |= 0x01
                 }
                 else {
@@ -201,7 +220,7 @@ namespace calliBot2 {
                 }
                 break;
             case C2Motor.rechts:
-                if (state == C2State.an) {
+                if (anaus) {
                     c2LedState |= 0x02
                 }
                 else {
@@ -209,7 +228,7 @@ namespace calliBot2 {
                 }
                 break;
             case C2Motor.beide:
-                if (state == C2State.an) {
+                if (anaus) {
                     c2LedState |= 0x03
                 }
                 else {
@@ -221,8 +240,87 @@ namespace calliBot2 {
         pins.i2cWriteBuffer(0x21, buffer);
     }
 
+    //% intensity.min=0 intensity.max=8 intensity.defl=6
+    //% blockId=K_RGB_LED block="V1 Schalte Beleuchtung |%led| Farbe|$color| Helligkeit|$intensity|(0..8)"
+    //% color.shadow="CallibotNumberPicker"   
+    export function setRgbLed1(led: C2RgbLed, color: number, intensity: number) {
+        let len = 0;
+        let tColor = 0;
+        let index = 0;
+        init()
+        if (intensity < 0) {
+            intensity = 0;
+        }
+        if (intensity > 8) {
+            intensity = 8;
+        }
+        if (intensity > 0) {
+            intensity = (intensity * 2 - 1) * 16;
+            switch (color) {
+                case C2RgbColor.red:
+                    tColor = 0x02
+                    break;
+                case C2RgbColor.green:
+                    tColor = 0x01
+                    break;
+                case C2RgbColor.blue:
+                    tColor = 0x04
+                    break;
+                case C2RgbColor.yellow:
+                    tColor = 0x03
+                    break;
+                case C2RgbColor.aqua:
+                    tColor = 0x05
+                    break;
+                case C2RgbColor.violett:
+                    tColor = 0x06
+                    break;
+                case C2RgbColor.white:
+                    tColor = 0x07
+                    break;
+                case C2RgbColor.black:
+                    tColor = 0x07
+                    intensity = 0
+                    break;
+            }
+
+            switch (led) {
+                case C2RgbLed.LH:
+                    index = 2;
+                    len = 2;
+                    break;
+                case C2RgbLed.RH:
+                    index = 3;
+                    len = 2;
+                    break;
+                case C2RgbLed.LV:
+                    index = 1;
+                    len = 2;
+                    break;
+                case C2RgbLed.RV:
+                    index = 4;
+                    len = 2;
+                    break;
+                case C2RgbLed.All:
+                    index = 1;
+                    len = 5;
+                    break;
+            }
+            let buffer = pins.createBuffer(len)
+            buffer[0] = index;
+            buffer[1] = intensity | tColor
+            if (len == 5) {
+                buffer[2] = buffer[1];
+                buffer[3] = buffer[1];
+                buffer[4] = buffer[1];
+            }
+            pins.i2cWriteBuffer(0x21, buffer);
+            basic.pause(10);
+        }
+    }
+
     //% intensity.min=0 intensity.max=8
-    //% blockId=C2_RGB_LED block="Schalte Beleuchtung $led rot $red grün $green blau $blue"
+    //% blockId=C2_RGB_LED block="V2 Schalte Beleuchtung $led rot $red grün $green blau $blue"
     //% red.min=0 red.max=16
     //% green.min=0 green.max=16
     //% blue.min=0 blue.max=16
@@ -231,7 +329,7 @@ namespace calliBot2 {
         let index = 0;
         let buffer = pins.createBuffer(5)
         init()
-        if (led != C2RgbLed.All){
+        if (led != C2RgbLed.All) {
             switch (led) {
                 case C2RgbLed.LH:
                     index = 2;
@@ -255,7 +353,7 @@ namespace calliBot2 {
             pins.i2cWriteBuffer(0x22, buffer);
         }
         else { // all leds, repeat 4 times
-            for (index = 1; index <5; index ++){
+            for (index = 1; index < 5; index++) {
                 buffer[0] = 0x03;
                 buffer[1] = index;
                 buffer[2] = red;
@@ -266,10 +364,10 @@ namespace calliBot2 {
         }
     }
 
- 
-    //% block="Stoßstange |%sensor| |%status"
+
+    //% block="V2 Stoßstange |%sensor| |%status"
     //% color="#00C040"
-    export function readBumperSensor(sensor: C2Sensor, status: C2State): boolean{
+    export function readBumperSensor(sensor: C2Sensor, status: C2State): boolean {
         let result = false
         let buffer = pins.i2cReadBuffer(0x21, 1);
         init();
@@ -281,27 +379,25 @@ namespace calliBot2 {
         }
 
         switch (status) {
-        case C2State.an:
-            if (buffer[0] != 0) {
-                result = true
-            }
-            else {
-                result = false
-            }
-            break
-        case C2State.aus:
-            if (buffer[0] == 0) {
-                result = true
-            }
-            else {
-                result = false
-            }
-            break
+            case C2State.an:
+                if (buffer[0] != 0) {
+                    result = true
+                }
+                else {
+                    result = false
+                }
+                break
+            case C2State.aus:
+                if (buffer[0] == 0) {
+                    result = true
+                }
+                else {
+                    result = false
+                }
+                break
         }
         return result;
     }
-
-
 
     //% color="#00C040" block="Liniensensor |%sensor| |%status"
     export function readLineSensor(sensor: C2Sensor, status: C2SensorStatus): boolean {
@@ -400,7 +496,7 @@ namespace calliBot2 {
         }
     }
 
-    //% color="#0082E6" block="Warte bis Stoßstange $sensor = $status"
+    //% color="#0082E6" block="V2 Warte bis Stoßstange $sensor = $status"
     export function warteBSensor(sensor: C2Sensor, status: C2State) {
         while (!(readBumperSensor(sensor, status))) {
         }
