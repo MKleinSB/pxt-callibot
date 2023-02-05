@@ -1,6 +1,6 @@
 {
     "name": "callibot",
-    "version": "1.0.2",
+    "version": "2.0.0",
     "description": "MakeCode package for the Callibot car",
     "dependencies": {
         "core": "*"
