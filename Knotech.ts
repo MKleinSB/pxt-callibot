@@ -1,5 +1,5 @@
 // Calli:bot 1 & 2 by Knotech
-// optimiert von M. Klein 5.2.23
+// optimiert von M. Klein 7.2.23
 
 enum C2Motor {
     links,
@@ -81,6 +81,8 @@ enum C2SensorWait {
     brightness,
     //% block="Temperatur"
     temperature,
+    //% block="Lautstärke"
+    soundLevel,
     //% block="Beschleunigung X"
     accellX,
     //% block="Beschleunigung Y"
@@ -105,7 +107,6 @@ namespace calliBot2 {
 
     let c2Initialized = 0;
     let c2LedState = 0;
-    let c2FunkAktiv = 0;
     let c2IsBot2 = 0;
 
     /**
@@ -121,7 +122,6 @@ namespace calliBot2 {
     export function CallibotNumberPicker(value: number) {
         return value;
     }
-    //let KFunkInitialized = 0
 
     function init() {
         if (c2Initialized != 1) {
@@ -182,6 +182,7 @@ namespace calliBot2 {
     }
 
     //% pos.min=0 pos.max=180
+    //% pos.shadow="protractorPicker"
     //% blockId=C2_Servo block="Bewege Servo |%nr| auf |%pos|°"
     export function servo(nr: C2Servo, pos: number) {
         let buffer = pins.createBuffer(2)
@@ -364,9 +365,8 @@ namespace calliBot2 {
         }
     }
 
-
     //% block="V2 Stoßstange |%sensor| |%status"
-    //% color="#00C040"
+    //% color="#00C040" 
     export function readBumperSensor(sensor: C2Sensor, status: C2State): boolean {
         let result = false
         let buffer = pins.i2cReadBuffer(0x21, 1);
@@ -443,8 +443,6 @@ namespace calliBot2 {
         }
     }
 
-
-
     //% blockId=C2_warte color="#0082E6" block="Warte bis |%sensor| |%check| |%value"
     export function warte(sensor: C2SensorWait, check: C2Check, value: number) {
         let abbruch = 0
@@ -471,6 +469,9 @@ namespace calliBot2 {
                     break;
                 case C2SensorWait.temperature:
                     sensorValue = input.temperature()
+                    break;
+                case C2SensorWait.soundLevel:
+                    sensorValue = input.soundLevel()
                     break;
             }
             switch (check) {
