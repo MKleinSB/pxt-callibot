@@ -129,11 +129,14 @@ namespace calliBot2 {
             let buffer = pins.i2cReadBuffer(0x21, 1);
             if ((buffer[0] & 0x80) != 0) {        // Check if it's a CalliBot2
                 c2IsBot2 = 1;
+                setRgbLed(C2RgbLed.All, 0, 0, 0);
+            }
+            else {
+                setRgbLed1(C2RgbLed.All, 0, 0)
             }
             setLed(C2Motor.links, false);
             setLed(C2Motor.rechts, false);
             motorStop(C2Motor.beide, C2Stop.Bremsen);
-            setRgbLed(C2RgbLed.All, 0, 0, 0);
         }
     }
 
@@ -157,7 +160,8 @@ namespace calliBot2 {
         }
     }
 
-    //% speed.min=5 speed.max=100
+
+    //% speed.min=5 speed.max=100 speed.defl=50
     //% blockId=C2_motor block="Schalte Motor |%KMotor| |%KDir| mit |%number|\\%"
     export function motor(nr: C2Motor, direction: C2Dir, speed: number) {
         if (speed > 100) {
@@ -284,40 +288,40 @@ namespace calliBot2 {
                     intensity = 0
                     break;
             }
-
-            switch (led) {
-                case C2RgbLed.LH:
-                    index = 2;
-                    len = 2;
-                    break;
-                case C2RgbLed.RH:
-                    index = 3;
-                    len = 2;
-                    break;
-                case C2RgbLed.LV:
-                    index = 1;
-                    len = 2;
-                    break;
-                case C2RgbLed.RV:
-                    index = 4;
-                    len = 2;
-                    break;
-                case C2RgbLed.All:
-                    index = 1;
-                    len = 5;
-                    break;
-            }
-            let buffer = pins.createBuffer(len)
-            buffer[0] = index;
-            buffer[1] = intensity | tColor
-            if (len == 5) {
-                buffer[2] = buffer[1];
-                buffer[3] = buffer[1];
-                buffer[4] = buffer[1];
-            }
-            pins.i2cWriteBuffer(0x21, buffer);
-            basic.pause(10);
         }
+        switch (led) {
+            case C2RgbLed.LH:
+                index = 2;
+                len = 2;
+                break;
+            case C2RgbLed.RH:
+                index = 3;
+                len = 2;
+                break;
+            case C2RgbLed.LV:
+                index = 1;
+                len = 2;
+                break;
+            case C2RgbLed.RV:
+                index = 4;
+                len = 2;
+                break;
+            case C2RgbLed.All:
+                index = 1;
+                len = 5;
+                break;
+        }
+        let buffer = pins.createBuffer(len)
+        buffer[0] = index;
+        buffer[1] = intensity | tColor
+        if (len == 5) {
+            buffer[2] = buffer[1];
+            buffer[3] = buffer[1];
+            buffer[4] = buffer[1];
+        }
+        pins.i2cWriteBuffer(0x21, buffer);
+        basic.pause(10);
+
     }
 
     //% intensity.min=0 intensity.max=8
